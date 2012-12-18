@@ -25,11 +25,12 @@ describe('create board object', function() {
 
     it('should give target cell index', function() {
 
-        var index = reversi.getCellIndex(2, 2);
+        var index = reversi.getCellIndex(2, 3);
 
         board[index] = 1;
 
         var expected = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 1, 0, 0, 0, 0, 0, 
@@ -37,10 +38,9 @@ describe('create board object', function() {
             0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 
-            0, 0, 0, 0, 0, 0, 0, 0, 
         ];
 
-        should.equal(index, 18);
+        should.equal(index, 26);
         should.deepEqual(board, expected);
         
         board[index] = 0; // undo
