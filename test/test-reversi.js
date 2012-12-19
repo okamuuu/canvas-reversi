@@ -64,6 +64,51 @@ describe('create board object', function() {
         should.deepEqual(board, expected);
     });
 
+    it('should put place', function() {
+
+        reversi.putPlace(2, 3, 'black', board);
+
+        var expected = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 1, 1, 2, 0, 0, 0, 
+            0, 0, 0, 2, 1, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+        ];
+
+        should.deepEqual(board, expected);
+        
+        board[26] = 0; // undo
+    });
+
+    it('should turn back place.', function() {
+
+        var direction = [1, 0];
+        var x = 2, y = 4;
+
+        reversi.canTurnBackPlace(direction, x, y, 'black', board);
+        reversi.putPlace(x, y, 'black', board);
+
+        var expected = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 1, 2, 0, 0, 0, 
+            0, 0, 0, 2, 1, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+        ];
+
+        should.deepEqual(board, expected);
+        
+        board[34] = 0; // undo
+    });
+
+
 //    it('should get initial postions', function() {
 //
 //        var positions = tetris.getInitialPositions(10);
