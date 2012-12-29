@@ -66,7 +66,7 @@ describe('create board object', function() {
 
     it('should put place', function() {
 
-        reversi.putPlace(2, 3, 'black', board);
+        reversi.putPlace(26, 'black', board);
 
         var expected = [
             0, 0, 0, 0, 0, 0, 0, 0, 
@@ -86,13 +86,11 @@ describe('create board object', function() {
 
     it('should turn back place.', function() {
 
-        var direction = [1, 0]; // 右
-        var x = 2, y = 4;
+        var indexes = reversi.findReversibleIndexes(1, 34, 'black', board);
 
-        var indexes = reversi.findReversibleIndexesByPlacingDisk(1, x, y, 'black', board);
         console.log('indexes:', indexes);
 
-        reversi.putPlace(x, y, 'black', board);
+        reversi.putPlace(34, 'black', board);
         reversi.reverseDisks(indexes, 'black', board);
 
         var expected = [
@@ -107,8 +105,50 @@ describe('create board object', function() {
         ];
 
         should.deepEqual(board, expected);
+ 
+        indexes = reversi.findAllReversibleIndexes(42, 'white', board);
+        console.log('indexes:', indexes);
+
+        should.deepEqual(indexes, [35]);
+ 
+        reversi.putPlace(42, 'white', board);
+        reversi.reverseDisks(indexes, 'white', board);
+
+        expected = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 1, 2, 0, 0, 0, 
+            0, 0, 1, 2, 1, 0, 0, 0, 
+            0, 0, 2, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+        ];
+
+        should.deepEqual(board, expected);
+    });
+
+    it('should get rest placeable indexes.', function() {
+
+        board = reversi.createBoard();
         
-        //board[34] = 0; // undo
+        reversi.putInitialPlace(board);
+
+        var expected = [
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 1, 2, 0, 0, 0, 
+            0, 0, 0, 2, 1, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+            0, 0, 0, 0, 0, 0, 0, 0, 
+        ];
+
+        var indexes = reversi.getRestPlaceableIndexes('black', board);
+        console.log(indexes);
+
+        should.deepEqual(board, expected);
     });
 
 });
