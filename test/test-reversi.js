@@ -146,9 +146,16 @@ describe('create board object', function() {
         ];
 
         var indexes = reversi.getRestPlaceableIndexes('black', board);
-        console.log(indexes);
 
         should.deepEqual(board, expected);
     });
+
+    it('should get better putting indexes.', function() {
+
+        var betterIndexes = reversi.getBetterPuttingIndex([1, 2, 3]);
+
+        should.equal(betterIndexes[0], 2);
+    });
+
 
 });
