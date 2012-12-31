@@ -152,7 +152,7 @@ describe('create board object', function() {
 
     it('should get better putting indexes.', function() {
 
-        var betterIndexes = reversi.getBetterPuttingIndex([1, 2, 3]);
+        var betterIndexes = reversi.getBetterPuttingIndexes([1, 2, 3]);
 
         should.equal(betterIndexes[0], 2);
     });

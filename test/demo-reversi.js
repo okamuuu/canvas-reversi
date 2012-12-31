@@ -1,5 +1,1 @@
-var reversi = require('../lib/reversi');
-
-reversi.demoPlay();
-
-
+require('../lib/reversi').demoPlay();

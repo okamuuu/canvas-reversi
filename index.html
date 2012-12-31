@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=320,user-scalable=no">
+    <style> * { margin:0; padding:0; } </style>
+    <script src='lib/reversi.js'></script>
+    </head>
+<body> 
+<canvas id="aCanvas" width="320" height="320"></canvas>
+<script type="text/javascript">
+
+    var board = reversi.createBoard();
+    reversi.putInitialPlace(board);
+
+    // 描画の余白、1マスの幅、ボードの列数と行数
+    var padX = 12, padY = 12;
+    var cellW = 37;
+    var bRows = 8, bCols = 8;
+    
+    var canvas = $("aCanvas");
+   
+    // イベントの設定
+    canvas.ontouchstart = function (e) {
+        var t = e.touches[0];
+        e.preventDefault();
+        touchHandler(t);
+    };
+    canvas.onmousedown = touchHandler;
+
+    // コンテキストを取得
+    var context = canvas.getContext("2d");
+
+    drawBoard(canvas, board);
+
+    function drawBoard (canvas, board) {
+
+        var placeableIndexes = reversi.getRestPlaceableIndexes('black', board);
+        console.log('placeableIndexes:', placeableIndexes);
+
+
+        var context = canvas.getContext("2d");
+
+        // 背景を初期化
+        context.fillStyle = "green";
+        context.fillRect(0, 0, 320, 320);
+    
+        // ボードのセル線を描画
+        context.beginPath();
+
+        var y1 = padY;
+        var y2 = padY + bRows * cellW;
+        
+        for (var x = 0; x <= bCols; x++) {
+            var xx = x * cellW + padX;
+            console.log('xx-y1:', xx, y1);
+            console.log('xx-y2:', xx, y2);
+            context.moveTo(xx, y1);
+            context.lineTo(xx, y2);
+        }
+
+        var x1 = padX;
+        var x2 = padX + bCols * cellW;
+        
+        for (var y = 0; y <= bRows; y++) {
+            var yy = y * cellW + padY;
+            context.moveTo(x1, yy);
+            context.lineTo(x2, yy);
+        }
+        
+        context.strokeStyle = "white";
+        context.stroke(); 
+        
+        // 盤面を見やすくするために点を四つ打つ
+        var pt = [[2, 2], [6, 6], [2, 6], [6, 2]];
+        for (var i = 0; i < pt.length; i++) {
+            var x = pt[i][0] * cellW + padX;
+            var y = pt[i][1] * cellW + padY;
+            drawCircle(x, y, 4, "white");
+        }
+
+        // 各セルを表示する
+        var r2 = cellW / 2;
+        for (var i = 0; i < board.length; i++) {
+            var col = i % bCols;
+            var row = Math.floor(i / bCols);
+            var x = padX + col * cellW;
+            var y = padY + row * cellW;
+            var cn = board[i];
+            
+            drawCircle(x+r2, y+r2, r2-2, ['green', 'black', 'white'][cn]);
+        }
+
+        // draw placeable indexes
+        for (var i = 0, l = placeableIndexes.length; i < l; i++) {
+            var index = placeableIndexes[i];
+            var col = index % bCols;
+            var row = Math.floor(index / bCols);
+            var x = padX + col * cellW;
+            var y = padY + row * cellW;
+            drawCircle(x+r2, y+r2, 4, "#33cc33");
+        } 
+
+    }
+
+    function $(id) { return document.getElementById(id); }
+    
+    function drawCircle(x, y, r, color) {
+        context.beginPath();
+        context.arc(x, y, r, 0, Math.PI * 2);
+        context.fillStyle = color;
+        context.fill();
+    }
+
+    // ボードをタッチしたとき
+    function touchHandler(t) {
+        console.log('t:', t);
+        var x = t.pageX - padX;
+        var y = t.pageY - padY;
+        var cx = Math.floor(x / cellW);
+        var cy = Math.floor(y / cellW);
+        console.log(x, y, cx, cy);
+
+        var index = cx + cy * bCols;
+        console.log('index:', index);
+        reversi.putPlace( index, 'black', board); 
+
+        drawBoard(canvas, board);
+        //        var cnt = canPutCell(cx, cy, C_BLACK);
+        
+//        if (cnt >= 1) {
+//        console.log("change=", cx, cy, "count=" + cnt);
+//        putCell(cx, cy, C_BLACK);
+//        drawBoard();
+//        
+//        if (isFinished()) {
+//            showResult(); return;
+//        }
+//        
+//        $("msg").innerHTML = "コンピューターの番です。";
+//        setTimeout(computerTurn, 300);
+        
+    }
+</script>
+</body>
+</html>
+
