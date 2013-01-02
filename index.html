@@ -19,7 +19,9 @@
     var bRows = 8, bCols = 8;
     
     var canvas = $("aCanvas");
-   
+
+    var currentColor = 'black';
+
     // イベントの設定
     canvas.ontouchstart = function (e) {
         var t = e.touches[0];
@@ -31,13 +33,12 @@
     // コンテキストを取得
     var context = canvas.getContext("2d");
 
-    drawBoard(canvas, board);
+    drawBoard(canvas, currentColor, board);
 
-    function drawBoard (canvas, board) {
+    function drawBoard (canvas, currentColor, board) {
 
-        var placeableIndexes = reversi.getRestPlaceableIndexes('black', board);
+        var placeableIndexes = reversi.getRestPlaceableIndexes(currentColor, board);
         console.log('placeableIndexes:', placeableIndexes);
-
 
         var context = canvas.getContext("2d");
 
@@ -53,8 +54,8 @@
         
         for (var x = 0; x <= bCols; x++) {
             var xx = x * cellW + padX;
-            console.log('xx-y1:', xx, y1);
-            console.log('xx-y2:', xx, y2);
+            //console.log('xx-y1:', xx, y1);
+            //console.log('xx-y2:', xx, y2);
             context.moveTo(xx, y1);
             context.lineTo(xx, y2);
         }
@@ -123,9 +124,29 @@
 
         var index = cx + cy * bCols;
         console.log('index:', index);
-        reversi.putPlace( index, 'black', board); 
 
-        drawBoard(canvas, board);
+        var reversibleIndexes = reversi.findAllReversibleIndexes(index, currentColor, board);
+
+        if(reversibleIndexes.length === 0) {
+            throw new Error(index + ' is not reversible index!!');
+        }
+
+        reversi.putPlace(index, currentColor, board); 
+        reversi.reverseDisks(reversibleIndexes, currentColor, board);
+
+        currentColor = currentColor === 'black' ? 'white' : 'black';
+        
+        drawBoard(canvas, currentColor, board);
+
+        reversi.npcPlay(currentColor, board);
+
+        setTimeout(function() {
+                
+            currentColor = currentColor === 'black' ? 'white' : 'black';
+            drawBoard(canvas, currentColor, board);
+                
+        }, 1000);
+       
         //        var cnt = canPutCell(cx, cy, C_BLACK);
         
 //        if (cnt >= 1) {
