@@ -107,18 +107,30 @@
 
         play(index, board);
         finalize();
-        
-        setTimeout(function() {
+
+        var npcFunc = function() {
                 var placedIndex = npcPlay(board);
-                
+
                 if(!placedIndex && isEnd(board)) {
                     var result = reversi.getResult(board); 
                     var winner = result[1] > result[2] ? '黒' : '白';
                     $("msg").innerHTML = winner + "の勝ちです。" + ' 黒:' + result[1] + ' 白:' + result[2];
+                    return;
                 }
                 
+                var placeableIndexes = reversi.getRestPlaceableIndexes('black', board);
+                
                 finalize();
-        }, 300);
+
+                if(placeableIndexes.length === 0) {
+                    ("msg").innerHTML = '黒が置ける場所がありません。パスします。';
+                    changeColor(); 
+                    finalize();
+                    setTimeout(npcFunc, 3000);
+                }
+        };
+
+        setTimeout(npcFunc, 500);
     }
 
     function isEnd(board) {
@@ -212,8 +224,6 @@
     function drawCells (canvas, indexes, size, color) {
         
         var r2 = cellW / 2;
-
-        console.log('color:', color);
 
         for (var i = 0, l = indexes.length; i < l; i++) {
             var col = indexes[i] % bCols;
