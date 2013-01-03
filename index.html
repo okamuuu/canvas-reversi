@@ -11,6 +11,17 @@
 <div id="msg"></div>
 <script type="text/javascript">
 
+    var _currentColor = 'black';
+
+    function currentColor() {
+        return _currentColor;
+    }
+
+    function changeColor() {
+        _currentColor = _currentColor === 'black' ? 'white' : 'black';
+        return _currentColor;
+    }
+
     var board = reversi.createBoard();
     reversi.putInitialPlace(board);
 
@@ -18,7 +29,6 @@
     var padX = 12, padY = 12;
     var cellW = 37;
     var bRows = 8, bCols = 8;
-    var currentColor = 'black';
     
     var canvas = $("aCanvas");
 
@@ -34,7 +44,52 @@
     // コンテキストを取得
     var context = canvas.getContext("2d");
 
-    drawBoard(canvas, currentColor, board);
+    var color = currentColor();
+    drawBoard(canvas, color, board);
+
+    function play(index, board) {
+
+        var color = currentColor();
+
+        // 裏返す
+        var reversibleIndexes = reversi.findAllReversibleIndexes(index, color, board);
+        reversi.putPlace(index, color, board); 
+        reversi.reverseDisks(reversibleIndexes, color, board);
+
+        changeColor();
+        
+        $("msg").innerHTML = "コンピュータの番です。";
+        
+        return index;
+    }
+
+    function npcPlay(board) {
+    
+        var color = currentColor();
+
+        var placedIndex = reversi.npcPlay(color, board);
+        
+        changeColor();
+
+        if(placedIndex) { 
+            $("msg").innerHTML = "あなたの番です。";
+        }
+        else {
+            $("msg").innerHTML = "コンピュータはパスしました。あなたの番です。";
+        }
+
+        return placedIndex;
+    }
+
+    function finalize() {
+
+        var color = currentColor();
+        var result = parseBoard(color, board);
+
+        var suggests = color === 'black' ? result.suggests : [];
+
+        draw(canvas, result.blacks, result.whites, suggests);
+    }
 
     // ボードをタッチしたとき
     function touchHandler(t) {
@@ -46,34 +101,29 @@
 
         var index = cx + cy * bCols;
 
-        var reversibleIndexes = reversi.findAllReversibleIndexes(index, currentColor, board);
+        if(!reversi.canPut(index, 'black', board) ) {
+            return;
+        }
 
-        reversi.putPlace(index, currentColor, board); 
-        reversi.reverseDisks(reversibleIndexes, currentColor, board);
-
-        var parsed = parseBoard(currentColor, board);
-        draw(canvas, parsed.blacks, parsed.whites, parsed.suggests);
-
-        currentColor = currentColor === 'black' ? 'white' : 'black';
-
-        $("msg").innerHTML = "コンピューターの番です。";
+        play(index, board);
+        finalize();
         
         setTimeout(function() {
+                var placedIndex = npcPlay(board);
                 
-            var npcPlacedIndex = reversi.npcPlay(currentColor, board);
+                if(!placedIndex && isEnd(board)) {
+                    var result = reversi.getResult(board); 
+                    var winner = result[1] > result[2] ? '黒' : '白';
+                    $("msg").innerHTML = winner + "の勝ちです。" + ' 黒:' + result[1] + ' 白:' + result[2];
+                }
+                
+                finalize();
+        }, 300);
+    }
 
-            currentColor = currentColor === 'black' ? 'white' : 'black';
-            
-            drawBoard(canvas, currentColor, board);
-
-            if(npcPlacedIndex) {
-                $("msg").innerHTML = "あなたの番です。";
-            }
-            else {
-                $("msg").innerHTML = "コンピュータはパスしました。あなたの番です。";
-            } 
-        }, 1000);
-       
+    function isEnd(board) {
+        var placeableIndexes = reversi.getRestPlaceableIndexes('black', board);
+        return placeableIndexes.length === 0 ? true : false;
     }
 
     function parseBoard(color, board) {

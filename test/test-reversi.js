@@ -157,5 +157,4 @@ describe('create board object', function() {
         should.equal(betterIndexes[0], 2);
     });
 
-
 });
