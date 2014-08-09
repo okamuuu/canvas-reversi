@@ -1,1 +1,1 @@
-require('../lib/reversi').demoPlay();
+require('../public/lib/reversi').demoPlay();

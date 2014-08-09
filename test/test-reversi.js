@@ -1,5 +1,5 @@
 var should = require('should');
-var reversi = require('../lib/reversi');
+var reversi = require('../public/lib/reversi');
 
 describe('create board object', function() {
 
